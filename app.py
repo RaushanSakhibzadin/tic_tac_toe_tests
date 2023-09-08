@@ -13,20 +13,24 @@ def index():
     return render_template('index.html', board=board)
 
 
+@app.route('/new_game', methods=['POST'])
+def new_game():
+    global board
+    board = [''] * 9
+    return redirect(url_for('index'))
+
+
 @app.route('/play/<int:position>', methods=['POST'])
 def play(position):
     global board
     if board[position] == '':
-        board[position] = 'X'  # Let's assume the player is always 'X' for simplicity
+        board[position] = 'X'
         if check_win(board, 'X'):
             flash('Player X wins!')
-            board = [''] * 9
-            return redirect(url_for('index'))
-        # Now let the 'O' (computer) play
-        computer_play()
-        if check_win(board, 'O'):
-            flash('Player O wins!')
-            board = [''] * 9
+        else:
+            computer_play()
+            if check_win(board, 'O'):
+                flash('Player O wins!')
     return redirect(url_for('index'))
 
 
@@ -54,4 +58,4 @@ def check_win(b, player):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', port=5001, debug=True)
