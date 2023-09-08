@@ -36,7 +36,9 @@ jobs:
         APP_PID=$!
         echo "Flask app started with PID $APP_PID"
 
-    - name: Wait for user input
+    - name: Monitor Flask app
       run: |
-        read -p "Press any key to stop the Flask app..."
-        kill $APP_PID
+        while pgrep flask > /dev/null; do
+          sleep 5
+        done
+        echo "Flask app has stopped"
