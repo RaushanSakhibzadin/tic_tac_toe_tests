@@ -1,0 +1,36 @@
+name: Flask CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10
+
+    - name: Set up virtual environment
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+
+    - name: Install dependencies
+      run: |
+        source venv/bin/activate
+        pip install Flask
+
+    - name: Run Flask app (for demonstration)
+      run: |
+        source venv/bin/activate
+        export FLASK_APP=app.py
+        flask run &
+        sleep 10  # Let the server run for 10 seconds for demonstration
