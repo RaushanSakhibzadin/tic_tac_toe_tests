@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build:
+  build_flask:
     runs-on: self-hosted
 
     steps:
@@ -28,9 +28,15 @@ jobs:
         source venv/bin/activate
         pip install Flask
 
-    - name: Run Flask app (for demonstration)
+    - name: Run Flask app
       run: |
         source venv/bin/activate
         export FLASK_APP=app.py
-        flask run &
-        sleep 10  # Let the server run for 10 seconds for demonstration
+        flask run & 
+        APP_PID=$!
+        echo "Flask app started with PID $APP_PID"
+
+    - name: Wait for user input
+      run: |
+        read -p "Press any key to stop the Flask app..."
+        kill $APP_PID
