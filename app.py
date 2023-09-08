@@ -30,6 +30,13 @@ def play(position):
     return redirect(url_for('index'))
 
 
+@app.route('/stop', methods=['POST'])
+def stop_game():
+    # Logic to stop the game
+    flash('Game stopped.')
+    return redirect(url_for('index'))
+
+
 def computer_play():
     global board
     for i in range(9):
