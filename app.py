@@ -3,9 +3,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
 
-# The board is a list of 9 elements representing the 9 squares.
-# 'X' for X, 'O' for O, and '' for empty squares.
 board = [''] * 9
+game_on = True
 
 
 @app.route('/')
@@ -15,34 +14,64 @@ def index():
 
 @app.route('/new_game', methods=['POST'])
 def new_game():
-    global board
+    global board, game_on
     board = [''] * 9
+    game_on = True
     return redirect(url_for('index'))
 
 
 @app.route('/play/<int:position>', methods=['POST'])
 def play(position):
-    global board
+    global board, game_on
+    if not game_on:
+        flash('Game is not ongoing. Start a new game!')
+        return redirect(url_for('index'))
+
     if board[position] == '':
         board[position] = 'X'
         if check_win(board, 'X'):
             flash('Player X wins!')
-        else:
-            computer_play()
-            if check_win(board, 'O'):
-                flash('Player O wins!')
+            game_on = False
+            return redirect(url_for('index'))
+        computer_play()
+        if check_win(board, 'O'):
+            flash('Player O wins!')
+            game_on = False
+    if '' not in board:
+        flash('It\'s a draw!')
+        game_on = False
     return redirect(url_for('index'))
 
 
-@app.route('/stop', methods=['POST'])
-def stop_game():
-    # Logic to stop the game
-    flash('Game stopped.')
+@app.route('/restart', methods=['POST'])
+def restart_game():
+    global board, game_on
+    board = [''] * 9
+    game_on = True
+    flash('Game restarted.')
     return redirect(url_for('index'))
 
 
 def computer_play():
     global board
+    # Check for computer's winning move
+    # for i in range(9):
+    #     if board[i] == '':
+    #         board[i] = 'O'
+    #         if check_win(board, 'O'):
+    #             return
+    #         board[i] = ''
+    #
+    # # Check to block player's winning move
+    # for i in range(9):
+    #     if board[i] == '':
+    #         board[i] = 'X'
+    #         if check_win(board, 'X'):
+    #             board[i] = 'O'
+    #             return
+    #         board[i] = ''
+
+    # Play first available move
     for i in range(9):
         if board[i] == '':
             board[i] = 'O'
