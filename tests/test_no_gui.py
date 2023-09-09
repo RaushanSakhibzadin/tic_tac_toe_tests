@@ -2,8 +2,6 @@ import pytest
 import requests
 from bs4 import BeautifulSoup
 
-from app import play
-
 BASE_URL = 'http://localhost:5001'
 
 
