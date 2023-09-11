@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+import os
 
 app = Flask(__name__)
-app.secret_key = 'some_secret_key'
+app.secret_key = os.environ.get('SECRET_KEY')
 
 board = [''] * 9
 game_on = True
@@ -54,24 +55,21 @@ def restart_game():
 
 def computer_play():
     global board
-    # Check for computer's winning move
-    # for i in range(9):
-    #     if board[i] == '':
-    #         board[i] = 'O'
-    #         if check_win(board, 'O'):
-    #             return
-    #         board[i] = ''
-    #
-    # # Check to block player's winning move
-    # for i in range(9):
-    #     if board[i] == '':
-    #         board[i] = 'X'
-    #         if check_win(board, 'X'):
-    #             board[i] = 'O'
-    #             return
-    #         board[i] = ''
+    for i in range(9):
+        if board[i] == '':
+            board[i] = 'O'
+            if check_win(board, 'O'):
+                return
+            board[i] = ''
 
-    # Play first available move
+    for i in range(9):
+        if board[i] == '':
+            board[i] = 'X'
+            if check_win(board, 'X'):
+                board[i] = 'O'
+                return
+            board[i] = ''
+
     for i in range(9):
         if board[i] == '':
             board[i] = 'O'

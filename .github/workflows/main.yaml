@@ -8,13 +8,24 @@ on:
 jobs:
   build_flask:
     container:
-      image: python:3.10-slim-buster
+      image: python:3.11-slim-buster
 
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    - name: Check SECRET_KEY environment variable
+      run: |
+        if [[ -z "${{ secrets.SECRET_KEY }}" ]]; then
+          echo "Error: SECRET_KEY environment variable is not set!"
+          exit 1
+        fi
+
+    - name: Show installed Python version
+      run: |
+        python --version
 
     - name: Install dependencies
       run: |
@@ -24,9 +35,16 @@ jobs:
       run: |
         export FLASK_RUN_PORT=5001
         export FLASK_APP=app.py
+        export SECRET_KEY=${{ secrets.SECRET_KEY }}
         flask run & 
         APP_PID=$!
         echo "Flask app started with PID $APP_PID"
+
+    - name: Add Logging
+      run: |
+        echo "Adding print statements for debugging..."
+        sed -i '1i print("Starting tests...")' tests/test_no_gui.py
+        sed -i '2i print("Checking test cases...")' tests/test_no_gui.py
 
     - name: Run tests
       run: |
